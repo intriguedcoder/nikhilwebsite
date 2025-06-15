@@ -32,14 +32,14 @@ const Header = ({ activeView, setActiveView, resumepdf }) => (
           <span style={{marginLeft: '8px'}}>LinkedIn Profile</span>
         </a>
         <div className="mt-4">
-          <span style={{color: '#555', marginRight: '10px'}}>Download Resume:</span>
+          <span style={{color: '#555', marginRight: '10px'}}>My resume:</span>
           <a 
             href={resumepdf} 
             download="Nikhil_Nedungadi_Resume.pdf"
             className="resume-button"
             style={{textDecoration: 'none'}}
           >
-            Nikhil Nedungadi Resume
+            Download
           </a>
         </div>
       </div>
