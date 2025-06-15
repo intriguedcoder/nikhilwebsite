@@ -1,0 +1,239 @@
+/* Global Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+/* Resume Container */
+.resume {
+  width: 80%;
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: whitesmoke;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+/* Button Styles */
+.resume-button {
+  background-color: #007BFF;
+  color: white;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.resume-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.resume-button:active {
+  transform: translateY(0);
+}
+
+/* Typography */
+.resume-title {
+  font-size: 2.5rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.contact-info {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-size: 1.8rem;
+  color: #007BFF;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #007BFF;
+  padding-bottom: 5px;
+  font-weight: bold;
+}
+
+/* List Styles */
+.list {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0 30px;
+}
+
+.list-item {
+  font-size: 1rem;
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.list-item:hover {
+  background-color: #f0f0f0;
+  transform: translateX(5px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+/* Animation Classes */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.6s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.button-hover {
+  transition: all 0.3s ease;
+}
+
+.button-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.skill-tag {
+  transition: all 0.3s ease;
+}
+
+.skill-tag:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.project-card {
+  transition: all 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.nav-button-active {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .resume {
+    width: 95%;
+    margin: 10px auto;
+    padding: 15px;
+  }
+  
+  .resume-title {
+    font-size: 2rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .contact-info {
+    font-size: 1rem;
+  }
+  
+  .list-item {
+    padding: 10px 12px;
+  }
+  
+  .resume-button {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .resume-title {
+    font-size: 1.8rem;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .contact-info {
+    font-size: 0.9rem;
+  }
+  
+  .list-item {
+    font-size: 0.9rem;
+    padding: 8px 10px;
+  }
+}
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background-color: white;
+  }
+  
+  .resume {
+    box-shadow: none;
+    width: 100%;
+    margin: 0;
+  }
+  
+  .resume-button {
+    display: none;
+  }
+  
+  .card-hover:hover,
+  .list-item:hover {
+    transform: none;
+    background-color: transparent;
+  }
+}
