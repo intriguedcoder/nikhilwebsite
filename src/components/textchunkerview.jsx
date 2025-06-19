@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import config from '../config';
 
@@ -8,6 +8,62 @@ const TextChunkerView = ({
   chunkerState,
   setChunkerState
 }) => {
+  const [copiedStates, setCopiedStates] = useState({});
+  const [permanentlyCopied, setPermanentlyCopied] = useState(new Set());
+
+  // Modified copy to clipboard function - revert button text after timeout
+  const copyToClipboard = async (text, identifier) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedStates(prev => ({ ...prev, [identifier]: true }));
+      
+      // Reset button text after 2 seconds for all buttons
+      setTimeout(() => {
+        setCopiedStates(prev => ({ ...prev, [identifier]: false }));
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      const textField = document.createElement('textarea');
+      textField.innerText = text;
+      document.body.appendChild(textField);
+      textField.select();
+      document.execCommand('copy');
+      textField.remove();
+      
+      setCopiedStates(prev => ({ ...prev, [identifier]: true }));
+      
+      // Reset button text after 2 seconds for all buttons
+      setTimeout(() => {
+        setCopiedStates(prev => ({ ...prev, [identifier]: false }));
+      }, 2000);
+    }
+  };
+
+  // Copy individual chunk with chunk number
+  const copyChunkWithNumber = (chunk, index) => {
+    const formattedChunk = `CHUNK ${index + 1} OF ${chunkerState.result.num_chunks}\nCharacters: ${chunk.length.toLocaleString()}\n${'-'.repeat(60)}\n\n${chunk}`;
+    copyToClipboard(formattedChunk, `chunk-${index}`);
+    
+    // Add to permanently copied set to keep box green
+    setPermanentlyCopied(prev => new Set([...prev, `chunk-${index}`]));
+  };
+
+  // Copy all chunks as formatted text
+  const copyAllChunks = () => {
+    if (!chunkerState.result) return;
+
+    const formattedText = chunkerState.result.chunks.map((chunk, index) => 
+      `CHUNK ${index + 1} OF ${chunkerState.result.num_chunks}\n` +
+      `Characters: ${chunk.length.toLocaleString()}\n` +
+      '-'.repeat(60) + '\n\n' +
+      chunk + '\n\n' +
+      '='.repeat(50) + '\n'
+    ).join('\n');
+
+    copyToClipboard(formattedText, 'all-chunks');
+  };
+
   // Simple handlers without event prevention in onChange
   const handleMaxCharsChange = (e) => {
     setChunkerState(prev => ({ ...prev, maxChars: e.target.value }));
@@ -20,7 +76,7 @@ const TextChunkerView = ({
     if (value === '' || isNaN(numValue) || numValue < 100) {
       setChunkerState(prev => ({ ...prev, maxChars: 2900 }));
     } else {
-      const clampedValue = Math.max(100, Math.min(50000, numValue));
+      const clampedValue = Math.max(100, Math.min(5000000, numValue));
       setChunkerState(prev => ({ ...prev, maxChars: clampedValue }));
     }
   };
@@ -39,8 +95,8 @@ const TextChunkerView = ({
     if (isNaN(validMaxChars) || validMaxChars < 100) {
       validMaxChars = 2900;
       setChunkerState(prev => ({ ...prev, maxChars: validMaxChars }));
-    } else if (validMaxChars > 50000) {
-      validMaxChars = 50000;
+    } else if (validMaxChars > 5000000) {
+      validMaxChars = 5000000;
       setChunkerState(prev => ({ ...prev, maxChars: validMaxChars }));
     }
 
@@ -197,6 +253,8 @@ const TextChunkerView = ({
       result: null,
       error: null
     }));
+    setCopiedStates({});
+    setPermanentlyCopied(new Set()); // Clear permanently copied chunks
   };
 
   return (
@@ -243,14 +301,13 @@ const TextChunkerView = ({
         )}
       </div>
 
-      {/* Settings Panel - Fixed to prevent form submission */}
+      {/* Settings Panel */}
       <div className="resume card-hover" style={{ marginBottom: '30px' }}>
         <h3 style={{ fontSize: '1.5rem', marginBottom: '20px' }}>Settings</h3>
         
-        {/* Wrap inputs in div, NOT form */}
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(auto, 1fr))', 
           gap: '20px', 
           marginBottom: '20px' 
         }}>
@@ -269,12 +326,13 @@ const TextChunkerView = ({
                 padding: '8px 12px',
                 border: '1px solid #ddd',
                 borderRadius: '4px',
-                fontSize: '16px'
+                fontSize: '16px',
+                boxSizing: 'border-box'
               }}
-              placeholder="Enter max characters (100-50000)"
+              placeholder="Enter max characters (100-5000000)"
             />
             <small style={{ color: '#666', fontSize: '12px' }}>
-              Default: 2900, Range: 100-50000
+              Default: 2900, Range: 100-5000000
             </small>
           </div>
           
@@ -290,11 +348,12 @@ const TextChunkerView = ({
                 padding: '8px 12px',
                 border: '1px solid #ddd',
                 borderRadius: '4px',
-                fontSize: '16px'
+                fontSize: '16px',
+                boxSizing: 'border-box'
               }}
             >
-              <option value="smart">Smart (preserves punctuation)</option>
-              <option value="simple">Simple (word boundaries only)</option>
+              <option value="smart">Smart (preserves punctuation,maintains context)</option>
+              <option value="simple">Simple (word boundaries only,for sending max words to AI models)</option>
             </select>
           </div>
         </div>
@@ -315,7 +374,7 @@ const TextChunkerView = ({
         </div>
       </div>
 
-      {/* Input Panel - Fixed to prevent form submission */}
+      {/* Input Panel */}
       <div className="resume card-hover" style={{ marginBottom: '30px' }}>
         <h3 style={{ fontSize: '1.5rem', marginBottom: '20px' }}>Input Text</h3>
         
@@ -328,7 +387,6 @@ const TextChunkerView = ({
             error: null 
           }))}
           onKeyDown={(e) => {
-            // Allow Enter in textarea for line breaks, but prevent form submission
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
               e.preventDefault();
             }
@@ -411,13 +469,26 @@ const TextChunkerView = ({
             gap: '10px'
           }}>
             <h3 style={{ fontSize: '1.5rem', margin: 0 }}>Results</h3>
-            <button 
-              type="button"
-              onClick={downloadChunks} 
-              className="resume-button"
-            >
-              📥 Download Chunks
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button 
+                type="button"
+                onClick={copyAllChunks}
+                className="resume-button"
+                style={{
+                  backgroundColor: copiedStates['all-chunks'] ? '#28a745' : '#17a2b8',
+                  cursor: 'pointer'
+                }}
+              >
+                {copiedStates['all-chunks'] ? '✓ Copied!' : '📋 Copy All Chunks'}
+              </button>
+              <button 
+                type="button"
+                onClick={downloadChunks} 
+                className="resume-button"
+              >
+                📥 Download Chunks
+              </button>
+            </div>
           </div>
           
           {/* Statistics Grid */}
@@ -473,7 +544,7 @@ const TextChunkerView = ({
             </div>
           </div>
 
-          {/* Chunk Sizes Visualization - Limited to first 50 for performance */}
+          {/* Chunk Sizes Visualization */}
           <h4 style={{ marginBottom: '15px' }}>Chunk Sizes:</h4>
           <div style={{ 
             display: 'grid', 
@@ -500,7 +571,7 @@ const TextChunkerView = ({
             )}
           </div>
 
-          {/* Chunks Preview - Limited to first 10 for performance */}
+          {/* Chunks Preview with Copy Functionality */}
           <details style={{ marginTop: '20px' }}>
             <summary style={{ 
               cursor: 'pointer', 
@@ -508,7 +579,7 @@ const TextChunkerView = ({
               marginBottom: '15px',
               fontSize: '16px'
             }}>
-              📄 View Chunks Preview (First 10)
+              📄 View All Chunks ({chunkerState.result.chunks.length})
             </summary>
             <div style={{ 
               maxHeight: '500px', 
@@ -516,10 +587,12 @@ const TextChunkerView = ({
               border: '1px solid #ddd', 
               borderRadius: '4px' 
             }}>
-              {chunkerState.result.chunks.slice(0, 10).map((chunk, index) => (
+              {chunkerState.result.chunks.map((chunk, index) => (
                 <div key={index} style={{ 
                   padding: '15px', 
-                  borderBottom: index < Math.min(9, chunkerState.result.chunks.length - 1) ? '1px solid #eee' : 'none' 
+                  borderBottom: index < chunkerState.result.chunks.length - 1 ? '1px solid #eee' : 'none',
+                  backgroundColor: permanentlyCopied.has(`chunk-${index}`) ? '#d4edda' : 'transparent',
+                  transition: 'background-color 0.3s ease'
                 }}>
                   <div style={{ 
                     fontWeight: 'bold', 
@@ -530,9 +603,27 @@ const TextChunkerView = ({
                     alignItems: 'center'
                   }}>
                     <span>Chunk {index + 1} of {chunkerState.result.num_chunks}</span>
-                    <span style={{ fontSize: '12px', fontWeight: 'normal' }}>
-                      {chunk.length.toLocaleString()} characters
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 'normal' }}>
+                        {chunk.length.toLocaleString()} characters
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => copyChunkWithNumber(chunk, index)}
+                        style={{
+                          padding: '4px 8px',
+                          fontSize: '12px',
+                          border: '1px solid #007BFF',
+                          borderRadius: '4px',
+                          backgroundColor: copiedStates[`chunk-${index}`] ? '#28a745' : '#fff',
+                          color: copiedStates[`chunk-${index}`] ? '#fff' : '#007BFF',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {copiedStates[`chunk-${index}`] ? '✓ Copied!' : '📋 Copy'}
+                      </button>
+                    </div>
                   </div>
                   <div style={{ 
                     fontSize: '14px', 
@@ -547,11 +638,6 @@ const TextChunkerView = ({
                   </div>
                 </div>
               ))}
-              {chunkerState.result.chunks.length > 10 && (
-                <div style={{ padding: '15px', textAlign: 'center', color: '#666' }}>
-                  ... and {chunkerState.result.chunks.length - 10} more chunks (download to see all)
-                </div>
-              )}
             </div>
           </details>
         </div>

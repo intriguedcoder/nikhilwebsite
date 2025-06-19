@@ -9,8 +9,9 @@ import traceback
 app = Flask(__name__)
 CORS(app)
 
-def break_paragraph(text, max_chars=2900):
-    print(f"break_paragraph called with text length: {len(text)}, max_chars: {max_chars}")
+def break_paragraph_smart(text, max_chars=2900):
+    """Smart chunking - preserves sentence boundaries and punctuation"""
+    print(f"break_paragraph_smart called with text length: {len(text)}, max_chars: {max_chars}")
     
     if len(text) <= max_chars:
         print("Text is within limit, returning as single chunk")
@@ -20,7 +21,7 @@ def break_paragraph(text, max_chars=2900):
     current_chunk = ""
     
     try:
-        # Split by sentences
+        # Split by sentences first (preserves punctuation)
         sentences = re.split(r'(?<=[.!?])\s+', text)
         print(f"Split into {len(sentences)} sentences")
         
@@ -70,11 +71,61 @@ def break_paragraph(text, max_chars=2900):
             chunks.append(current_chunk.strip())
             print(f"Added final chunk {len(chunks)}: {len(current_chunk.strip())} chars")
         
-        print(f"break_paragraph completed: {len(chunks)} chunks created")
+        print(f"break_paragraph_smart completed: {len(chunks)} chunks created")
         return chunks
         
     except Exception as e:
-        print(f"Error in break_paragraph: {e}")
+        print(f"Error in break_paragraph_smart: {e}")
+        print(f"Traceback: {traceback.format_exc()}")
+        # Fallback: simple character-based splitting
+        print("Using fallback character-based splitting")
+        return [text[i:i+max_chars] for i in range(0, len(text), max_chars)]
+
+def break_paragraph_simple(text, max_chars=2900):
+    """Simple chunking - splits only at word boundaries without considering punctuation"""
+    print(f"break_paragraph_simple called with text length: {len(text)}, max_chars: {max_chars}")
+    
+    if len(text) <= max_chars:
+        print("Text is within limit, returning as single chunk")
+        return [text]
+    
+    chunks = []
+    words = text.split()
+    current_chunk = ""
+    
+    try:
+        for word in words:
+            # Check if adding this word would exceed the limit
+            if len(current_chunk) + len(word) + 1 <= max_chars:
+                current_chunk += word + " "
+            else:
+                # Save current chunk if it exists
+                if current_chunk:
+                    chunks.append(current_chunk.strip())
+                    print(f"Added chunk {len(chunks)}: {len(current_chunk.strip())} chars")
+                
+                # Handle oversized single words
+                if len(word) > max_chars:
+                    print(f"Word too long ({len(word)} chars), splitting by characters")
+                    # Split long words by characters
+                    for i in range(0, len(word), max_chars):
+                        chunk_part = word[i:i+max_chars]
+                        chunks.append(chunk_part)
+                        print(f"Added character-split chunk {len(chunks)}: {len(chunk_part)} chars")
+                    current_chunk = ""
+                else:
+                    current_chunk = word + " "
+        
+        # Add the last chunk if it exists
+        if current_chunk:
+            chunks.append(current_chunk.strip())
+            print(f"Added final chunk {len(chunks)}: {len(current_chunk.strip())} chars")
+        
+        print(f"break_paragraph_simple completed: {len(chunks)} chunks created")
+        return chunks
+        
+    except Exception as e:
+        print(f"Error in break_paragraph_simple: {e}")
         print(f"Traceback: {traceback.format_exc()}")
         # Fallback: simple character-based splitting
         print("Using fallback character-based splitting")
@@ -151,15 +202,15 @@ def chunk_text():
         print(f"Clean transcript: {clean_transcript_flag}")
         print(f"Method: {method}")
         
-        # Add size limit (1MB)
-        if len(text) > 1000000:
+        # Add size limit (10MB)
+        if len(text) > 10000000:
             print("ERROR: Text too large")
-            return jsonify({'error': 'Text too large. Maximum 1MB allowed.'}), 400
+            return jsonify({'error': 'Text too large. Maximum 10MB allowed.'}), 400
         
         # Validate max_chars
-        if max_chars < 10 or max_chars > 10000:
+        if max_chars < 10 or max_chars > 5000000:
             print("ERROR: Invalid max_chars value")
-            return jsonify({'error': 'max_chars must be between 10 and 10000'}), 400
+            return jsonify({'error': 'max_chars must be between 10 and 5000000'}), 400
         
         # Process the text
         original_length = len(text)
@@ -170,8 +221,13 @@ def chunk_text():
         else:
             cleaned_text = text
         
-        print("Starting text chunking...")
-        chunks = break_paragraph(cleaned_text, max_chars)
+        print(f"Starting text chunking with method: {method}")
+        
+        # Use the selected chunking method
+        if method == 'simple':
+            chunks = break_paragraph_simple(cleaned_text, max_chars)
+        else:  # default to 'smart'
+            chunks = break_paragraph_smart(cleaned_text, max_chars)
         
         # Prepare response
         response_data = {
@@ -181,10 +237,12 @@ def chunk_text():
             'chunks': chunks,
             'chunk_count': len(chunks),
             'num_chunks': len(chunks),
+            'method_used': method,
             'timestamp': datetime.now().isoformat()
         }
         
         print("=== RESPONSE READY ===")
+        print(f"Method used: {method}")
         print(f"Number of chunks: {len(chunks)}")
         print(f"Chunk lengths: {[len(chunk) for chunk in chunks[:5]]}")
         
