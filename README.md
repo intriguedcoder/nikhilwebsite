@@ -25,6 +25,7 @@
 ## 🚀 Live Demo
 
 Experience the platform in action: **[nikhilwebsite-seven.vercel.app](https://nikhilwebsite-seven.vercel.app)**
+Click text tools to access the  text chunker
 
 ## 🛠️ Tech Stack
 
