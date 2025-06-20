@@ -10,12 +10,10 @@
 
 **Tired of "message too long" errors when working with AI models?** This platform solves the universal challenge of processing large text documents, especially video transcripts, by intelligently breaking them into manageable chunks while preserving context and meaning.
 
-
-
 ## ✨ Features
 
 ### 🧠 Smart Chunking Method
-- **Context-Aware Splitting**: Uses advanced NLP and regex-based sentence detection
+- **Context-Aware Splitting**: Uses NLP sentence segmentation and regex-based text preprocessing
 - **Human-Readable Output**: Maintains narrative flow and readability
 - **Perfect for**: Articles, transcripts, documentation, and content meant for human consumption
 
@@ -37,7 +35,7 @@ Experience the platform in action: **[nikhilwebsite-seven.vercel.app](https://ni
 
 **Backend:**
 - Python Flask REST API
-- Natural Language Processing (NLP) libraries
+- Natural Language Processing with sentence segmentation
 - RESTful API design with proper CORS handling
 
 **Infrastructure:**
@@ -64,7 +62,7 @@ Experience the platform in action: **[nikhilwebsite-seven.vercel.app](https://ni
 ## 🎬 Perfect for Video Transcript Processing
 
 This tool excels at handling large video transcripts by:
-- Intelligently detecting sentence boundaries
+- Intelligently detecting sentence boundaries using NLP segmentation
 - Preserving speaker context and timing information
 - Maintaining conversation flow across chunks
 - Optimizing text for downstream AI processing tasks like summarization
@@ -72,28 +70,28 @@ This tool excels at handling large video transcripts by:
 ## 🏗️ Architecture
 
 ```
-Frontend (React.js) → REST API → Flask Backend → NLP Processing → Chunked Output
+Frontend (React.js) → REST API → Flask Backend → NLP Sentence Segmentation → Chunked Output
 ```
 
 The application follows a clean separation of concerns with:
 - **Presentation Layer**: React.js frontend with intuitive UI
 - **API Layer**: RESTful endpoints with proper error handling
-- **Business Logic**: Python Flask with NLP processing capabilities
+- **Business Logic**: Python Flask with NLP sentence segmentation capabilities
 - **Infrastructure**: Serverless deployment for scalability
 
 ## 💡 Key Highlights
 
 - **Production-Ready**: Deployed and battle-tested in live environment
 - **Scalable Architecture**: Clean separation of frontend and backend for easy maintenance and updates  
-- **Intelligent Processing**: Context-aware chunking that understands text structure
+- **Intelligent Processing**: Context-aware chunking that understands text structure using NLP
 - **Developer-Friendly**: Clean APIs and well-documented codebase
 - **Performance Optimized**: Async JavaScript and efficient backend processing
 
 ## 🔧 Technical Implementation
 
 The platform leverages:
-- **Advanced NLP**: For intelligent sentence boundary detection
-- **Regex Processing**: For accurate text parsing and chunking
+- **NLP Sentence Segmentation**: For intelligent sentence boundary detection
+- **Regex Text Preprocessing**: For accurate text parsing and cleaning
 - **Asynchronous Operations**: For smooth user experience
 - **RESTful Design**: For clean API architecture
 - **CORS Handling**: For secure cross-origin requests
