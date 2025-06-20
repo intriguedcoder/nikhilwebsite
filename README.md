@@ -10,7 +10,7 @@
 
 **Tired of "message too long" errors when working with AI models?** This platform solves the universal challenge of processing large text documents, especially video transcripts, by intelligently breaking them into manageable chunks while preserving context and meaning.
 
-**🔄 Universal Text Processing**: While optimized for video transcripts, this tool works seamlessly with any large text content including research papers, articles, documentation, books, legal documents, and more.
+
 
 ## ✨ Features
 
