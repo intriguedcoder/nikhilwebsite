@@ -23,17 +23,27 @@ const App = () => {
     "C", "C++", "Python", "React", "HTML", "CSS", "JavaScript", 
     "Generative AI", "Artificial Intelligence", "Java", "SQL", 
     "MySQL", "Data Structures and Algorithms", 
-    "Object-Oriented Programming", "Tailwind CSS (Basic)"
+    "Object-Oriented Programming", "Tailwind CSS (Basic)", "NLP",
+    "REST APIs", "Serverless (Vercel)", "Axios", "Git", "JSON", 
+    "CORS", "Async JS", "Cloud-Native Development"
   ];
   const experience = [
     "Intern at HITACHI"
   ];
   const projects = [
     {
-      title: "Video Transcript Chunker",
-      description: "Developed a full-stack application with Python Flask backend and React frontend to break large video transcripts into manageable chunks.",
-      technologies: ["Python", "Flask", "React", "JavaScript", "REST API"],
-      features: ["Smart text chunking", "Transcript cleaning", "Multiple output formats", "Real-time processing"]
+      title: "Health-Partner: Medical Report AI Analyzer",
+      description: "Developed during Warpspeed: Agentic AI Hackathon by Lightspeed India, an AI-powered, multilingual medical report analysis and explanation system that allows users to upload medical report images, automatically extracts and interprets results using AI, and provides clear, patient-friendly explanations in multiple Indian languages with audio summaries.",
+      technologies: ["Python", "Flask", "Tesseract OCR", "Sarvam AI", "Sarvam TTS", "Sarvam-Translate", "REST API", "Regex", "Bhindi Orchestrator"],
+      features: ["Medical report image analysis", "OCR text extraction", "AI-powered medical interpretation", "Multilingual translation (11 Indian languages)", "Text-to-speech audio summaries", "Patient-friendly explanations", "Workflow automation"]
+    },
+    {
+      title: "Text Chunking for AI Models: Full-Stack Platform",
+      description: "Developed and deployed a production-ready text chunking application that processes large video transcripts with NLP and regex-based sentence detection using React.js and Python Flask. The tool efficiently prepares large text data for AI processing while preserving context. Click the text tools section on this website to try it out.",
+      technologies: ["React.js", "Python", "Flask", "NLP", "REST APIs", "Serverless (Vercel)", "Axios", "Git", "JSON", "CORS", "Async JS"],
+      features: ["Intelligent text chunking", "NLP-based sentence detection", "Regex processing", "Context preservation", "Cloud-native deployment", "Real-time processing", "Production-ready architecture"],
+      liveLink: "",
+      highlight: ""
     },
     {
       title: "Job Website using React",
@@ -47,15 +57,12 @@ const App = () => {
       technologies: ["React", "Socket.IO", "Node.js", "JavaScript"],
       features: ["Real-time messaging", "Private messaging", "Group chats"]
     },
-    
     {
       title: "Resume Website",
       description: "Created a personal resume website using React, showcasing my skills, projects, and experience.",
       technologies: ["React", "CSS", "HTML", "JavaScript"],
       features: ["Responsive design", "Interactive navigation", "Modern UI"]
     }
-    
-    
   ];
   const certifications = [
     "Artificial Intelligence Fundamentals (2023)",
