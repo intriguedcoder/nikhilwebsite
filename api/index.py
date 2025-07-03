@@ -146,7 +146,7 @@ def clean_transcript(text):
         print(f"After speaker label removal: {len(text)} chars")
         
         # Remove timestamps
-        text = re.sub(r'\[\d{2}:\d{2}:\d{2}\]', '', text)
+        text = re.sub(r'\[\d+(?:\.\d+)?s?\]|\[\d{1,2}:\d{2}(?::\d{2})?\]', '', text)
         print(f"After timestamp removal: {len(text)} chars")
         
         cleaned = text.strip()
